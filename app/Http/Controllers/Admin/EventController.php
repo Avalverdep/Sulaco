@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Inertia\Inertia;
+use Illuminate\Http\Request;
+use App\Models\EventType;
+use App\Http\Requests\StoreEventRequest;
 
 class EventController extends Controller
 {
@@ -28,5 +31,45 @@ class EventController extends Controller
             ]);
 
         return Inertia::render('Admin/Eventos/Index', ['eventos' => $eventos]);
+    }
+
+    public function create() {
+        return Inertia::render('Admin/Eventos/Create', [
+            'tipos' => EventType::orderBy('name')->get(['id', 'name']),
+        ]);
+    }
+
+    public function store(StoreEventRequest $request) {
+        $datos = $request->validated();
+
+        Event::create([
+            ...$datos,
+            'created_by' => $request->user()->id,
+            'status' => 'aprobado',
+        ]);
+
+        return redirect()
+            ->route('admin.eventos.index')
+            ->with('exito', 'Evento creado correctamente.');
+    }
+
+        public function destroy(Event $evento) {
+        if ($evento->registrations()->exists()) {
+            return back()->withErrors([
+                'evento' => 'Este evento tiene inscritos. Cancélalo en vez de borrarlo.',
+            ]);
+        }
+
+        $evento->delete();
+
+        return redirect()->route('admin.eventos.index')->with('exito', 'Evento eliminado.');
+    }
+
+        public function cancel(Event $evento) {
+        $evento->update(['status' => 'cancelado']);
+
+        // PENDIENTE: notificar por email a los inscritos.
+
+        return redirect()->route('admin.eventos.index')->with('exito', 'Evento cancelado.');
     }
 }

@@ -1,5 +1,6 @@
 <script setup>
 import AdminLayout from '../../../Layouts/AdminLayout.vue'
+import { Link, usePage} from '@inertiajs/vue3'
 
 defineProps({
   eventos: { type: Array, default: () => [] },
@@ -23,9 +24,11 @@ const colorEstado = {
         <h2 class="text-3xl font-extrabold tracking-tight">Todos los eventos</h2>
       </div>
 
-      <span class="text-[13px] font-semibold tracking-wide uppercase px-5 py-3 bg-black/10 text-black/35 rounded cursor-not-allowed">
-        + Nuevo evento
-      </span>
+      
+        <Link href="/admin/eventos/crear" class="text-[13px] font-semibold tracking-wide uppercase px-5 py-3 bg-[#E11D2E] text-white rounded hover:bg-[#c4162a] transition">
+          + Nuevo evento
+        </Link>
+      
     </div>
 
     <div v-if="eventos.length" class="bg-white border border-black/10 rounded-lg overflow-hidden">

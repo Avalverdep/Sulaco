@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, usePage} from '@inertiajs/vue3'
 import logo from '../../img/sulaco-logo.jpeg'
+import { computed } from 'vue'
+
+const usuario = computed(() => usePage().props.auth.user ?? null)
 
 defineProps({
   eventos: {
@@ -109,9 +112,17 @@ function scrollLateral(e) {
           >
             Calendario
           </Link>
-          <a href="/auth/google" class="text-[13px] font-semibold tracking-wide uppercase px-4 py-2.5 border border-black/20 rounded hover:border-black/50 transition">
+
+          <a v-if="!usuario" href="/auth/google" class="text-[13px] font-semibold tracking-wide uppercase px-4 py-2.5 border border-black/20 rounded hover:border-black/50 transition" >
             Entrar
           </a>
+
+          <Link v-else :href="usuario.role === 'admin' ? '/admin' : '/user'"
+          class="flex items-center gap-2.5 text-[13px] font-semibold tracking-wide uppercase px-3 py-2 border border-black/20 rounded hover:border-black/50 transition"
+          >
+            <img v-if="usuario.avatar" :src="usuario.avatar" alt="" class="w-7 h-7 rounded-full" />
+            <span class="max-w-[8rem] truncate normal-case">{{ usuario.name }}</span>
+          </Link>
         </div>
       </div>
     </header>
