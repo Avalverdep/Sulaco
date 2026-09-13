@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { Link, usePage} from '@inertiajs/vue3'
 import logo from '../../img/sulaco-logo.jpeg'
 import { computed } from 'vue'
+import Aviso from '../Components/Aviso.vue'
 
 const usuario = computed(() => usePage().props.auth.user ?? null)
 
@@ -413,4 +414,5 @@ function scrollLateral(e) {
       </div>
     </footer>
   </div>
+  <Aviso />
 </template>

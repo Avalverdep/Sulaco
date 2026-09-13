@@ -1,7 +1,9 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import logo from '../../img/sulaco-logo.jpeg'
+import EventoModal from '../Components/EventoModal.vue'
+import Aviso from '../Components/Aviso.vue'
 
 const props = defineProps({
   eventos: { type: Array, default: () => [] },
@@ -11,6 +13,8 @@ const props = defineProps({
   semanaSiguiente: { type: String, required: true },
   rotulo: { type: String, default: '' },
 })
+
+const eventoAbierto = ref(null)
 
 // Rejilla: de 10:00 a 20:00, bloques de una hora
 const HORA_INICIO = 10
@@ -164,6 +168,7 @@ function irASemana(semana) {
 
                 <!-- Bloques de evento, posicionados encima -->
                 <article
+                  @click="eventoAbierto = evento.id"
                   v-for="evento in eventosDelDia(dia.fecha)"
                   :key="evento.id"
                   class="absolute left-1 right-1 rounded border px-2 py-1.5 overflow-hidden transition hover:shadow-md cursor-pointer"
@@ -217,5 +222,7 @@ function irASemana(semana) {
         <p class="text-xs">Ruperto Medina 1 · 48920 Portugalete (Bizkaia)</p>
       </div>
     </footer>
+    <EventoModal :evento-id="eventoAbierto" @cerrar="eventoAbierto = null" />
   </div>
+  <Aviso />
 </template>

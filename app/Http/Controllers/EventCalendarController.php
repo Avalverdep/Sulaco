@@ -57,4 +57,35 @@ class EventCalendarController extends Controller
             'rotulo' => $inicio->translatedFormat('j M').' – '.$fin->translatedFormat('j M Y'),
         ]);
     }
+
+        public function show(Request $request, Event $evento)
+    {
+        abort_unless(in_array($evento->status, ['aprobado', 'pendiente']), 404);
+
+        $inscritos = $evento->registrations()->where('status', 'confirmada')->count();
+        $libres = $evento->capacity ? max($evento->capacity - $inscritos, 0) : null;
+        $esPrivado = $evento->kind === 'reserva_usuario';
+
+                $inscrito = $request->user()
+            ? $evento->registrations()
+                ->where('user_id', $request->user()->id)
+                ->where('status', 'confirmada')
+                ->exists()
+            : false;
+
+        return response()->json([
+            'id' => $evento->id,
+            'titulo' => $esPrivado ? 'Mesa reservada' : $evento->title,
+            'descripcion' => $esPrivado ? null : $evento->description,
+            'tipo' => $esPrivado ? null : $evento->tipo?->name,
+            'privado' => $esPrivado,
+            'fecha' => $evento->starts_at->translatedFormat('l, j \d\e F'),
+            'horas' => $evento->starts_at->format('H:i').'–'.$evento->ends_at->format('H:i'),
+            'aforo' => $evento->capacity,
+            'libres' => $libres,
+            'completo' => $libres !== null && $libres <= 0,
+            'pasado' => $evento->ends_at->isPast(),
+            'inscrito' => $inscrito,
+        ]);
+    }
 }
