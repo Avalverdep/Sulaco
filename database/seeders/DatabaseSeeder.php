@@ -10,6 +10,12 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
+    $this->call([
+    EventTypeSeeder::class,
+    CategorySeeder::class,
+    EventSeeder::class,
+    ]);
+
     /**
      * Seed the application's database.
      */

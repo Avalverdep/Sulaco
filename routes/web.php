@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\EventCalendarController;
 use App\Http\Controllers\EventRegistrationController;
+use App\Http\Controllers\Admin\ProductController;
 
 Route::get('/', [LandingController::class, 'index']);
 
@@ -28,6 +29,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/eventos', [EventController::class, 'store'])->name('eventos.store');
     Route::delete('/eventos/{evento}', [EventController::class, 'destroy'])->whereNumber('evento')->name('eventos.destroy');
     Route::patch('/eventos/{evento}/cancelar', [EventController::class, 'cancel'])->name('eventos.cancel');
+
+    Route::get('/productos', [ProductController::class, 'index'])->name('productos.index');
+    Route::get('/productos/crear', [ProductController::class, 'create'])->name('productos.create');
+    Route::post('/productos', [ProductController::class, 'store'])->name('productos.store');
+
+    Route::patch('/productos/{producto}/stock', [ProductController::class, 'stock'])->name('productos.stock');
+    
 });
 
 Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
@@ -39,7 +47,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/eventos/{evento}/inscripcion', [EventRegistrationController::class, 'destroy'])->name('inscripcion.destroy');
 });
 
-Route::get('/eventos/{evento}', [EventCalendarController::class, 'show'])->name('eventos.show');
+Route::get('/eventos/{evento}', [EventCalendarController::class, 'show'])->name('eventos.show')->whereNumber('evento');
+
+Route::get('/eventos', [EventCalendarController::class, 'index'])->name('eventos.index');
 
 Route::post('/logout', function (Request $request) {
     Auth::logout();
