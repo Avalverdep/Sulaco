@@ -18,8 +18,8 @@ const secciones = [
   {
     nombre: 'Inventario',
     desc: 'Productos, stock, categorías y pedidos a proveedor.',
-    href: null,
-    activo: false,
+    href: '/admin/productos',
+    activo: true,
   },
   {
     nombre: 'Ventas',

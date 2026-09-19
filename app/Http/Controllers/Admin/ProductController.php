@@ -31,10 +31,13 @@ class ProductController extends Controller
         return Inertia::render('Admin/Productos/Index', ['productos' => $productos]);
     }
 
-    public function create()
-    {
+    public function create(){
         return Inertia::render('Admin/Productos/Create', [
-            'categorias' => Category::orderBy('name')->get(['id', 'name']),
+            'categorias' => Category::query()
+                ->whereNull('parent_id')
+                ->with('hijas:id,parent_id,name')
+                ->orderBy('name')
+                ->get(['id', 'name']),
         ]);
     }
 

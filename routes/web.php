@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\EventCalendarController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\CatalogController;
 
 Route::get('/', [LandingController::class, 'index']);
 
@@ -50,6 +51,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/eventos/{evento}', [EventCalendarController::class, 'show'])->name('eventos.show')->whereNumber('evento');
 
 Route::get('/eventos', [EventCalendarController::class, 'index'])->name('eventos.index');
+
+Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalogo');
 
 Route::post('/logout', function (Request $request) {
     Auth::logout();

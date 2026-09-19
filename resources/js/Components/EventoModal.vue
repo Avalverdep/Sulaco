@@ -217,12 +217,10 @@
               Entra con tu cuenta de Google para reservar tu plaza. Solo guardamos tu nombre y correo.
             </p>
             <div class="flex gap-2">
-              
+              <a
                 href="/auth/google"
                 class="flex-1 text-center text-[13px] font-semibold uppercase tracking-wide px-4 py-2.5 bg-[#E11D2E] text-white rounded hover:bg-[#c4162a] transition"
-              <a>
-                Entrar con Google
-              </a>
+              >Entrar con Google</a>
               <button
                 @click="avisoRegistro = false"
                 class="text-[13px] font-semibold uppercase tracking-wide px-4 py-2.5 border border-black/20 rounded hover:border-black/50 transition"

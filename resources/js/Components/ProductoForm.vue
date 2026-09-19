@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 const props = defineProps({
   form: { type: Object, required: true },
@@ -22,6 +22,24 @@ const estados = [
 ]
 
 const imagenMostrada = computed(() => previsualizacion.value ?? props.imagenActual)
+
+const categoriaPadre = ref(null)
+
+const subcategorias = computed(() => {
+  const padre = props.categorias.find((c) => c.id === categoriaPadre.value)
+  return padre?.hijas ?? []
+})
+
+// Al cambiar de categoría principal, la subcategoría se reinicia
+watch(categoriaPadre, (nuevo) => {
+  props.form.subcategoria_id = null
+  props.form.category_id = nuevo
+})
+
+// Si hay subcategoría elegida, es la que se guarda
+watch(() => props.form.subcategoria_id, (nuevo) => {
+  props.form.category_id = nuevo ?? categoriaPadre.value
+})
 
 function seleccionarArchivo(archivo) {
   if (!archivo || !archivo.type.startsWith('image/')) return
@@ -111,14 +129,14 @@ function quitarImagen() {
         <p v-if="form.errors.name" class="text-xs text-red-600 mt-1.5">{{ form.errors.name }}</p>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-3">
-        <div>
+      <div class="grid gap-4 sm:grid-cols-2">
+                <div>
           <label for="categoria" class="block text-[11px] uppercase tracking-widest text-black/45 font-semibold mb-2">
             Categoría
           </label>
           <select
             id="categoria"
-            v-model="form.category_id"
+            v-model="categoriaPadre"
             class="w-full border rounded px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:border-[#E11D2E]"
             :class="form.errors.category_id ? 'border-red-400' : 'border-black/15'"
           >
@@ -126,6 +144,25 @@ function quitarImagen() {
             <option v-for="c in categorias" :key="c.id" :value="c.id">{{ c.name }}</option>
           </select>
           <p v-if="form.errors.category_id" class="text-xs text-red-600 mt-1.5">{{ form.errors.category_id }}</p>
+        </div>
+
+        <div>
+          <label for="subcategoria" class="block text-[11px] uppercase tracking-widest text-black/45 font-semibold mb-2">
+            Subcategoría <span class="normal-case tracking-normal text-black/30">(opcional)</span>
+          </label>
+          <select
+            id="subcategoria"
+            v-model="form.subcategoria_id"
+            :disabled="!subcategorias.length"
+            class="w-full border border-black/15 rounded px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:border-[#E11D2E] disabled:bg-black/5 disabled:text-black/35"
+          >
+            <option :value="null">
+              {{ !categoriaPadre ? 'Elige antes una categoría'
+                 : !subcategorias.length ? 'Sin subcategorías'
+                 : 'Ninguna' }}
+            </option>
+            <option v-for="s in subcategorias" :key="s.id" :value="s.id">{{ s.name }}</option>
+          </select>
         </div>
 
         <div>

@@ -16,6 +16,7 @@ const form = useForm({
   description: '',
   max_per_user: 2,
   imagen: null,
+  subcategoria_id: null
 })
 
 function enviar() {
