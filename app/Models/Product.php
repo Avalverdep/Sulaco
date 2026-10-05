@@ -19,4 +19,14 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
+
+    public function reservas()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
+    public function movimientos()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
 }

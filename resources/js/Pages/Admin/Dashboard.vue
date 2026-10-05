@@ -12,8 +12,8 @@ const secciones = [
   {
     nombre: 'Reservas',
     desc: 'Reservas de producto de los clientes y su estado.',
-    href: null,
-    activo: false,
+    href: '/admin/reservas',
+    activo: true,
   },
   {
     nombre: 'Inventario',

@@ -11,6 +11,8 @@ use App\Http\Controllers\EventCalendarController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 
 Route::get('/', [LandingController::class, 'index']);
 
@@ -36,11 +38,20 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/productos', [ProductController::class, 'store'])->name('productos.store');
 
     Route::patch('/productos/{producto}/stock', [ProductController::class, 'stock'])->name('productos.stock');
+
+    Route::get('/reservas', [AdminReservationController::class, 'index'])->name('reservas.index');  
+    Route::patch('/reservas/{reserva}/recoger', [AdminReservationController::class, 'collect'])->name('reservas.collect');
+    Route::patch('/reservas/{reserva}/cancelar', [AdminReservationController::class, 'cancel'])->name('reservas.cancel');   
     
 });
 
 Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
     Route::get('/', fn () => Inertia::render('User/Index'))->name('index');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/catalogo/{producto}/reservar', [ReservationController::class, 'store'])->name('reservas.store');
+    Route::delete('/reservas/{reserva}', [ReservationController::class, 'destroy'])->name('reservas.destroy');
 });
 
 Route::middleware('auth')->group(function () {

@@ -3,12 +3,19 @@ import { ref, computed, watch } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import logo from '@/../img/sulaco-logo.jpeg'
 import Aviso from '../Components/Aviso.vue'
+import { usePage } from '@inertiajs/vue3' 
 
 const props = defineProps({
   productos: { type: Array, default: () => [] },
   categorias: { type: Array, default: () => [] },
   filtros: { type: Object, default: () => ({}) },
 })
+
+const usuario = computed(() => usePage().props.auth?.user ?? null)
+const reservando = ref(null)
+const cantidad = ref(1)
+const avisoLogin = ref(false)
+const errores = computed(() => usePage().props.errors ?? {})
 
 const busqueda = ref(props.filtros.buscar ?? '')
 let temporizador = null
@@ -30,6 +37,25 @@ function filtrarPor(slug) {
     preserveState: true,
     preserveScroll: true,
   })
+}
+
+function abrirReserva(producto) {
+  if (!usuario.value) {
+    avisoLogin.value = true
+    return
+  }
+  reservando.value = producto
+  cantidad.value = 1
+}
+
+function confirmarReserva() {
+  router.post(`/catalogo/${reservando.value.id}/reservar`,
+    { cantidad: cantidad.value },
+    {
+      preserveScroll: true,
+      onSuccess: () => (reservando.value = null),
+    }
+  )
 }
 
 watch(busqueda, (texto) => {
@@ -174,10 +200,11 @@ watch(busqueda, (texto) => {
             <p class="font-extrabold text-lg text-[#E11D2E] mb-3">{{ producto.precio }}</p>
 
             <button
-              disabled
+              @click="abrirReserva(producto)"
+              :disabled="!producto.reservable"
               class="w-full text-[12px] font-semibold uppercase tracking-wide py-2.5 rounded transition"
               :class="producto.reservable
-                ? 'bg-black/10 text-black/35 cursor-not-allowed'
+                ? 'bg-[#E11D2E] text-white hover:bg-[#c4162a]'
                 : 'border border-black/10 text-black/30 cursor-not-allowed'"
             >
               {{ producto.reservable ? 'Reservar' : 'Agotado' }}
@@ -190,10 +217,6 @@ watch(busqueda, (texto) => {
         <p class="text-black/50">No hemos encontrado nada con esos filtros.</p>
         <p class="text-sm text-black/35 mt-1">Prueba con otra categoría o pregúntanos en tienda.</p>
       </div>
-
-      <p class="mt-8 text-xs text-black/35 text-center">
-        Las reservas estarán disponibles próximamente.
-      </p>
     </main>
 
     <footer class="bg-[#16181c] text-white/70">
@@ -205,6 +228,60 @@ watch(busqueda, (texto) => {
         <p class="text-xs">Ruperto Medina 1 · 48920 Portugalete (Bizkaia)</p>
       </div>
     </footer>
+
+        <!-- Confirmar reserva -->
+    <Teleport to="body">
+      <div v-if="reservando" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="reservando = null"></div>
+        <div class="relative bg-white border border-black/10 rounded-lg w-full max-w-sm p-6">
+          <p class="text-[10px] uppercase tracking-[0.18em] text-[#E11D2E] font-semibold mb-1.5">Reservar</p>
+          <h2 class="text-lg font-extrabold leading-tight mb-1">{{ reservando.nombre }}</h2>
+          <p class="text-sm text-black/50 mb-5">
+            Lo apartamos para ti. Pásate por la tienda a recogerlo.
+          </p>
+
+          <label class="block text-[11px] uppercase tracking-widest text-black/45 font-semibold mb-2">
+            Unidades
+          </label>
+          <div class="flex items-center gap-2 mb-5">
+            <button @click="cantidad > 1 && cantidad--" class="w-10 h-10 rounded border border-black/15 font-bold">−</button>
+            <span class="flex-1 text-center text-2xl font-extrabold">{{ cantidad }}</span>
+            <button @click="cantidad < reservando.maximo && cantidad++" class="w-10 h-10 rounded border border-black/15 font-bold">+</button>
+          </div>
+
+          <div class="flex gap-2">
+            <p v-if="errores.reserva" class="text-sm text-red-600 mb-4">{{ errores.reserva }}</p>
+            <button @click="reservando = null" class="flex-1 text-[13px] font-semibold uppercase tracking-wide py-3 border border-black/20 rounded hover:border-black/50 transition">
+              Cancelar
+            </button>
+            <button @click="confirmarReserva" class="flex-1 text-[13px] font-semibold uppercase tracking-wide py-3 bg-[#E11D2E] text-white rounded hover:bg-[#c4162a] transition">
+              Reservar
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Aviso de login -->
+    <Teleport to="body">
+      <div v-if="avisoLogin" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="avisoLogin = false"></div>
+        <div class="relative bg-white border border-black/10 rounded-lg w-full max-w-sm p-6 text-center">
+          <h2 class="text-lg font-extrabold mb-2">Necesitas una cuenta</h2>
+          <p class="text-sm text-black/55 mb-5">
+            Entra con tu cuenta de Google para reservar. Solo guardamos tu nombre y correo.
+          </p>
+          <div class="flex gap-2">
+            <button @click="avisoLogin = false" class="flex-1 text-[13px] font-semibold uppercase tracking-wide py-3 border border-black/20 rounded">
+              Ahora no
+            </button>
+            <a href="/auth/google" class="flex-1 text-[13px] font-semibold uppercase tracking-wide py-3 bg-[#E11D2E] text-white rounded text-center">
+              Entrar
+            </a>
+          </div>
+        </div>
+      </div>
+    </Teleport>
     <Aviso />
   </div>
 </template>

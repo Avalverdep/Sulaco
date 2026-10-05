@@ -40,6 +40,7 @@ class CatalogController extends Controller
                 'imagen' => ProductImage::url($p->image_path, true),
                 'reservable' => $p->stock > 0,
                 'proximamente' => $p->status === 'pedido',
+                'maximo' => $p->max_per_user,
             ]);
 
         return Inertia::render('Catalogo', [
