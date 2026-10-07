@@ -19,7 +19,7 @@ const filtrados = computed(() => {
 
   return props.productos.filter((p) => {
     if (texto && !p.nombre.toLowerCase().includes(texto)) return false
-    if (filtroCategoria.value !== 'todas' && p.categoria !== filtroCategoria.value) return false
+    if (filtroCategoria.value !== 'todas' && p.categoria_id !== filtroCategoria.value) return false
     if (filtroEstado.value === 'activos' && p.estado === 'descatalogado') return false
     if (filtroEstado.value !== 'activos' && filtroEstado.value !== 'todos' && p.estado !== filtroEstado.value) return false
     return true
@@ -91,7 +91,7 @@ function confirmarFijar(producto) {
         class="border border-black/15 rounded px-3 py-2 text-sm bg-white focus:outline-none focus:border-[#E11D2E]"
       >
         <option value="todas">Todas las categorías</option>
-        <option v-for="c in categorias" :key="c.id" :value="c.name">{{ c.name }}</option>
+        <option v-for="c in categorias" :key="c.id" :value="c.id">{{ c.name }}</option>
       </select>
 
       <div class="flex gap-1">

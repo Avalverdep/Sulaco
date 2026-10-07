@@ -102,6 +102,7 @@ function scrollLateral(e) {
 
         <nav class="hidden md:flex items-center gap-1 text-[13px] font-medium tracking-wide uppercase">
           <a href="#novedades" class="px-3 py-2 rounded hover:bg-black/5 transition">Novedades</a>
+          <Link href="/catalogo" class="px-3 py-2 rounded hover:bg-black/5 transition">Catálogo</Link>
           <a href="#eventos" class="px-3 py-2 rounded hover:bg-black/5 transition">Eventos</a>
           <a href="#visitanos" class="px-3 py-2 rounded hover:bg-black/5 transition">Visítanos</a>
         </nav>

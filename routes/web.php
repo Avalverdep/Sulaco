@@ -41,7 +41,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/reservas', [AdminReservationController::class, 'index'])->name('reservas.index');  
     Route::patch('/reservas/{reserva}/recoger', [AdminReservationController::class, 'collect'])->name('reservas.collect');
-    Route::patch('/reservas/{reserva}/cancelar', [AdminReservationController::class, 'cancel'])->name('reservas.cancel');   
+    Route::patch('/reservas/{reserva}/cancelar', [AdminReservationController::class, 'cancel'])->name('reservas.cancel');
+    
+    Route::get('/productos/{producto}/editar', [ProductController::class, 'edit'])->name('productos.edit');
+    Route::post('/productos/{producto}', [ProductController::class, 'update'])->name('productos.update');
+
+    Route::delete('/productos/{producto}', [ProductController::class, 'destroy'])->name('productos.destroy');
     
 });
 
