@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
+use App\Http\Controllers\UserController;
+
 
 Route::get('/', [LandingController::class, 'index']);
 
@@ -51,7 +53,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 Route::middleware('auth')->prefix('user')->name('user.')->group(function () {
-    Route::get('/', fn () => Inertia::render('User/Index'))->name('index');
+    Route::get('/', [UserController::class, 'index'])->name('index');
 });
 
 Route::middleware('auth')->group(function () {

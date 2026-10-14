@@ -25,4 +25,20 @@ class Reservation extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function posicionEnCola(): int
+    {
+        return static::where('product_id', $this->product_id)
+            ->where('status', 'activa')
+            ->where('created_at', '<', $this->created_at)
+            ->count() + 1;
+    }
+
+    public function unidadesPorDelante(): int
+    {
+        return static::where('product_id', $this->product_id)
+            ->where('status', 'activa')
+            ->where('created_at', '<', $this->created_at)
+            ->sum('quantity');
+    }
 }
